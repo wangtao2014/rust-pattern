@@ -88,3 +88,49 @@ fn main() {
         println!("{}", x);
     }; // this pattern will always match, so the `if let` is useless
     ```
+
+## 解构结构体和元组
+
+```Rust
+let ((feet, inches), Point { x, y }) = ((3, 10), Point { x: 3, y: -10 });
+```
+
+# 忽略模式中的值
+- 函数参数
+    - 实现 trait 时，当你需要特定类型签名但是函数实现并不需要某个参数时。此时编译器就不会警告说存在未使用的函数参数，就跟使用命名参数一样
+    ```Rust
+    fn foo(_: i32, y: i32) {
+        println!("This code only uses the y parameter: {}", y);
+    }
+
+    fn main() {
+        foo(3, 4);
+    }
+    ```
+- 忽略元组特定值
+    ```Rust
+    let numbers = (1, 2, 3, 4, 5);
+    match numbers {
+        (first, _, third, _, fourth, _, fifth) => {
+            println!("Some numbers: {}, {}, {}", first, third, fifth);
+        }
+    }
+    ```
+
+- 通过在名字前以一个下划线开头来忽略未使用的变量
+
+- 用 .. 忽略剩余值
+    - 然而使用 .. 必须是无歧义的。如果期望匹配和忽略的值是不明确的，Rust 会报错：
+    ```Rust
+        fn main() {
+            let numbers = (2, 4, 8, 16, 32);
+
+            match numbers {
+                (.., second, ..) => {
+                    println!("Some numbers: {}", second)
+                },
+            }
+        }
+    ```
+- 匹配守卫提供的额外条件
+    - 匹配守卫（match guard） 是一个指定于 match 分支模式之后的额外 if 条件，它也必须被满足才能选择此分支
